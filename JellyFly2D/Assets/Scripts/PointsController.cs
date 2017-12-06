@@ -10,15 +10,13 @@ public class PointsController : MonoBehaviour {
 
 		Animator planeAnimator = GetComponent<Animator> ();
 
-		int points = 0;
 		if (other.tag == "JellyRedTag") {
-			points = -1;
+			gameController.DecLife(1);
 			planeAnimator.SetBool ("underAttack", true);
 		} else if (other.tag == "jellyGreenTag") {
-			points = 1;
+			gameController.AddScore(1);
 			planeAnimator.SetBool ("eating",true);
 		}
-		gameController.AddPoints(points);
 		Destroy(other.gameObject);
 	}
 }

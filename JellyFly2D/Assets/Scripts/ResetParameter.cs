@@ -7,6 +7,7 @@ public class ResetParameter : StateMachineBehaviour {
 	 // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if (stateInfo.IsTag ("PlaneEating")) {
+			Debug.LogWarning ("Resetar eating");
 			animator.SetBool ("eating",false);
 		} else if (stateInfo.IsTag("PlaneUnderAttack")) {
 			Debug.LogWarning ("Resetar under attack");

@@ -5,14 +5,23 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 	public float frequency = 1;
-	public Text placar;
+	public Text scoreText;
+	public Text lifeText;
 	public GameObject[] jellys;
+	public GameObject plane;
 
-	int sumPoints = 0;
-	float lastTime;
+
+	private int sumScore;
+	private int sumLife;
+	private float lastTime;
+	private Animator animatorPlane;
 
 	// Use this for initialization
 	void Start () {
+		sumScore = 0;
+		sumLife = 10;
+		animatorPlane = plane.GetComponent<Animator> ();
+
 		if (frequency < 0.5f) {
 			frequency = 0.5f;
 		}
@@ -21,7 +30,12 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		placar.text = "Pontos: " + sumPoints.ToString();
+		scoreText.text = "Pontos: " + sumScore.ToString();
+		lifeText.text = "Vidas: " + sumLife.ToString (); 
+
+		if (!IsRunnig()) {
+			return;
+		}
 
 		if ((Time.time - lastTime) > (1/frequency)) {
 			lastTime = Time.time;
@@ -36,8 +50,29 @@ public class GameController : MonoBehaviour {
 		
 	}
 
-	public void AddPoints(int points) {
-		this.sumPoints += points;
-		Debug.LogWarning ("Total de pontos: " + this.sumPoints.ToString());
+	public void AddScore(int points) {
+		sumScore += points;
+		Debug.LogWarning ("Total de pontos: " + this.sumScore.ToString());
+	}
+
+	public void DecLife(int points) {
+		sumLife -= points;
+		if (sumLife <= 0) {
+			sumLife = 0;
+			animatorPlane.SetBool ("dead",true);
+		}
+			
+	}
+
+	public bool IsRunnig() {
+		return sumLife > 0;
+	}
+
+	public void ResetFase() {
+		sumLife = 10;
+		sumScore = 0;
+		animatorPlane.SetBool ("dead",false);
+		animatorPlane.SetBool ("underAttack",false);
+		animatorPlane.SetBool ("eating",false);
 	}
 }
