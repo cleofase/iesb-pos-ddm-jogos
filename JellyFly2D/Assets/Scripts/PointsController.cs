@@ -13,10 +13,12 @@ public class PointsController : MonoBehaviour {
 		if (other.tag == "JellyRedTag") {
 			gameController.DecLife(1);
 			planeAnimator.SetBool ("underAttack", true);
+			Destroy(other.gameObject);
 		} else if (other.tag == "jellyGreenTag") {
 			gameController.AddScore(1);
 			planeAnimator.SetBool ("eating",true);
+			Destroy(other.gameObject);
 		}
-		Destroy(other.gameObject);
+	
 	}
 }

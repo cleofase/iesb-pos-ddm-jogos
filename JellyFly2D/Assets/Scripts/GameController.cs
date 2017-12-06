@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 	public float frequency = 1;
@@ -11,15 +12,16 @@ public class GameController : MonoBehaviour {
 	public GameObject plane;
 
 
-	private int sumScore;
-	private int sumLife;
+	public int sumScore;
+	public int faseAtual = 1;
+	private bool mudouFase;
+	public int sumLife = 10;
 	private float lastTime;
 	private Animator animatorPlane;
 
 	// Use this for initialization
 	void Start () {
-		sumScore = 0;
-		sumLife = 10;
+
 		animatorPlane = plane.GetComponent<Animator> ();
 
 		if (frequency < 0.5f) {
@@ -45,13 +47,18 @@ public class GameController : MonoBehaviour {
 			GameObject jelly = Instantiate(jellys [rnd], jellyPosition, Quaternion.identity);
 
 			Rigidbody2D jellyRb = jelly.GetComponent<Rigidbody2D>();
-			jellyRb.velocity = new Vector2 ((-1 * frequency * Random.Range(5.0f, 10.0f)), 0);
+			jellyRb.velocity = new Vector2 ((-1 * frequency * 3), 0); 	
+			//Random.Range(5.0f, 10.0f)
 		}
 		
 	}
 
 	public void AddScore(int points) {
 		sumScore += points;
+		if (podeMudarFase()){
+			Debug.LogWarning ("muda fase" );
+			mudafase();
+		}
 		Debug.LogWarning ("Total de pontos: " + this.sumScore.ToString());
 	}
 
@@ -75,4 +82,23 @@ public class GameController : MonoBehaviour {
 		animatorPlane.SetBool ("underAttack",false);
 		animatorPlane.SetBool ("eating",false);
 	}
+
+	public bool podeMudarFase (){
+		SceneManager.LoadScene ("fase atula Fase0"+faseAtual.ToString());
+		SceneManager.LoadScene ("sumscore"+sumScore.ToString());
+		return (sumScore == 10 && faseAtual == 1) || (sumScore == 20 && faseAtual == 2) || (sumScore == 30 && faseAtual == 3) || (sumScore == 40 && faseAtual == 4);
+	}
+
+
+	public void mudafase(){
+		faseAtual += 1;
+		if (faseAtual > 4) {
+			Debug.LogWarning ("Ganhou");
+		} else {
+			Debug.LogWarning ("muda fase" + " Fase0"+faseAtual.ToString() );
+			SceneManager.LoadScene ("Fase0"+faseAtual.ToString());
+		}
+	}
+
+
 }

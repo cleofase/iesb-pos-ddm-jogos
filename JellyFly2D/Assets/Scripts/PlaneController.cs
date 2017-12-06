@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class PlaneController : MonoBehaviour {
     private Rigidbody2D rb;
 	private Animator animator;
@@ -20,17 +21,25 @@ public class PlaneController : MonoBehaviour {
 
 		if (Input.GetKey(KeyCode.UpArrow))
         {
-			rb.AddForce(new Vector2(0, 0.5f),ForceMode2D.Impulse);
+			//rb.AddForce(new Vector2(0, 0.5f),ForceMode2D.Impulse);
             //rigidBoby2D.AddForce(Vector2.up);
 
+			Vector3 posiAtu = transform.position;
+			posiAtu.y += 0.1f;
+			if (posiAtu.y < 5.0f) {
+				transform.position = posiAtu;
+			}
             return;
         }
 
 		if (Input.GetKey(KeyCode.DownArrow))
 		{
-			rb.AddForce(new Vector2(0, -0.5f),ForceMode2D.Impulse);
-			//rigidBoby2D.AddForce(Vector2.up);
-
+			//rb.AddForce(new Vector2(0, -0.5f),ForceMode2D.Impulse);
+			Vector3 posiAtu = transform.position;
+			posiAtu.y -= 0.1f;
+			if (posiAtu.y > -5.0f) {
+				transform.position = posiAtu;
+			}
 			return;
 		}
 
