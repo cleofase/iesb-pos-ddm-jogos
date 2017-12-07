@@ -19,11 +19,11 @@ public class BgScroll : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (gameController.IsRunnig ()) {
+		if (gameController.IsRunning ()) {
 			if (velocityScroll <= 0) {
 				velocityScroll = velocity;
 			}
-			offSet += velocityScroll;
+			offSet += (velocityScroll/100);
 			material.mainTextureOffset = new Vector2 (offSet, 0);
 		} else {
 			DecVelocityScroll ();

@@ -6,23 +6,26 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 	public float frequency = 1;
+	public int initialScore;
+	public int maxScore;
+	public int life;
+	public int fase;
+	public bool lastFase = false;
+
 	public Text scoreText;
 	public Text lifeText;
 	public GameObject[] jellys;
 	public GameObject plane;
+	public GameObject gameOver;
 
-
-	public int sumScore;
-	public int faseAtual = 1;
-	private bool mudouFase;
-	public int sumLife = 10;
 	private float lastTime;
 	private Animator animatorPlane;
+	private int score;
 
 	// Use this for initialization
 	void Start () {
-
 		animatorPlane = plane.GetComponent<Animator> ();
+		score = initialScore;
 
 		if (frequency < 0.5f) {
 			frequency = 0.5f;
@@ -32,73 +35,96 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		scoreText.text = "Pontos: " + sumScore.ToString();
-		lifeText.text = "Vidas: " + sumLife.ToString (); 
+		scoreText.text = "Pontos: " + score.ToString();
+		lifeText.text = "Vidas: " + life.ToString (); 
 
-		if (!IsRunnig()) {
+		if (IsDead()) {
+			Debug.LogWarning ("Game Over!!!");
+			return;
+		}
+
+		if (IsWinner()) {
+			Debug.LogWarning ("You Wins!!!");
+			return;
+		}
+
+		if (canChangeFase()) {
+			changeFase ();
 			return;
 		}
 
 		if ((Time.time - lastTime) > (1/frequency)) {
 			lastTime = Time.time;
-
-			int rnd = Random.Range(0, jellys.Length);
-			Vector3 jellyPosition = new Vector3(12, Random.Range(-5.0f, 5.0f), 0);
-			GameObject jelly = Instantiate(jellys [rnd], jellyPosition, Quaternion.identity);
-
-			Rigidbody2D jellyRb = jelly.GetComponent<Rigidbody2D>();
-			jellyRb.velocity = new Vector2 ((-1 * frequency * 3), 0); 	
-			//Random.Range(5.0f, 10.0f)
+			generateJelly ();
 		}
 		
 	}
 
-	public void AddScore(int points) {
-		sumScore += points;
-		if (podeMudarFase()){
-			Debug.LogWarning ("muda fase" );
-			mudafase();
+	private void generateJelly() {
+		int rnd = Random.Range(0, jellys.Length);
+		Vector3 jellyPosition = new Vector3(12, Random.Range(-5.0f, 5.0f), 0);
+		GameObject jelly = Instantiate(jellys [rnd], jellyPosition, Quaternion.identity);
+		Rigidbody2D jellyRb = jelly.GetComponent<Rigidbody2D>();
+		float mimVelocity = 1.500f;
+		float maxVelocity = mimVelocity + fase + 3.5000f;
+		jellyRb.velocity = new Vector2 ((-1 * frequency * Random.Range(mimVelocity, maxVelocity)), 0);
+	}
+
+	private void positionGameOver (){
+		Transform trans =  gameOver.GetComponent<Transform> ();
+		Vector3 postion = new Vector3(0, 0, 0);
+		trans.position = postion;
+
+	}
+
+
+	private bool canChangeFase() {
+		return (score >= maxScore);
+	}
+
+	private void changeFase() {
+		if (!lastFase) {
+			fase += 1;
+			SceneManager.LoadScene ("Fase0" + fase.ToString ());
+		} else {
+			// winner
+			animatorPlane.SetBool ("winner",true);
 		}
-		Debug.LogWarning ("Total de pontos: " + this.sumScore.ToString());
+	}
+
+
+	public void AddScore(int points) {
+		score += points;
 	}
 
 	public void DecLife(int points) {
-		sumLife -= points;
-		if (sumLife <= 0) {
-			sumLife = 0;
+		life -= points;
+		if (life <= 0) {
+			life = 0;
 			animatorPlane.SetBool ("dead",true);
+			positionGameOver ();
 		}
 			
 	}
 
-	public bool IsRunnig() {
-		return sumLife > 0;
+	public bool IsDead() {
+		return animatorPlane.GetBool("dead");
+	}
+
+	public bool IsWinner() {
+		return animatorPlane.GetBool("winner");
+	}
+
+	public bool IsRunning() {
+		return (life > 0);
 	}
 
 	public void ResetFase() {
-		sumLife = 10;
-		sumScore = 0;
+		life = 10;
+		score = 0;
 		animatorPlane.SetBool ("dead",false);
 		animatorPlane.SetBool ("underAttack",false);
 		animatorPlane.SetBool ("eating",false);
 	}
-
-	public bool podeMudarFase (){
-		SceneManager.LoadScene ("fase atula Fase0"+faseAtual.ToString());
-		SceneManager.LoadScene ("sumscore"+sumScore.ToString());
-		return (sumScore == 10 && faseAtual == 1) || (sumScore == 20 && faseAtual == 2) || (sumScore == 30 && faseAtual == 3) || (sumScore == 40 && faseAtual == 4);
-	}
-
-
-	public void mudafase(){
-		faseAtual += 1;
-		if (faseAtual > 4) {
-			Debug.LogWarning ("Ganhou");
-		} else {
-			Debug.LogWarning ("muda fase" + " Fase0"+faseAtual.ToString() );
-			SceneManager.LoadScene ("Fase0"+faseAtual.ToString());
-		}
-	}
-
 
 }
