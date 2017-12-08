@@ -14,9 +14,11 @@ public class GameController : MonoBehaviour {
 
 	public Text scoreText;
 	public Text lifeText;
+    public Text resumeText;
 	public GameObject[] jellys;
 	public GameObject plane;
 	public GameObject gameOver;
+    public GameObject youWin;
 
 	private float lastTime;
 	private Animator animatorPlane;
@@ -39,12 +41,14 @@ public class GameController : MonoBehaviour {
 		lifeText.text = "Vidas: " + life.ToString (); 
 
 		if (IsDead()) {
-			Debug.LogWarning ("Game Over!!!");
-			return;
+            positionGameOver();
+            tryResumeGame();
+            return;
 		}
 
 		if (IsWinner()) {
-			Debug.LogWarning ("You Wins!!!");
+            positionYouWin();
+            tryResumeGame();
 			return;
 		}
 
@@ -70,15 +74,21 @@ public class GameController : MonoBehaviour {
 		jellyRb.velocity = new Vector2 ((-1 * frequency * Random.Range(mimVelocity, maxVelocity)), 0);
 	}
 
-	private void positionGameOver (){
+	private void positionGameOver() {
 		Transform trans =  gameOver.GetComponent<Transform> ();
 		Vector3 postion = new Vector3(0, 0, 0);
 		trans.position = postion;
-
+        resumeText.text = "Press <Space bar> to resume...";
 	}
 
+    private void positionYouWin() {
+        Transform trans = youWin.GetComponent<Transform>();
+        Vector3 postion = new Vector3(0, 0, 0);
+        trans.position = postion;
+        resumeText.text = "Press <Space bar> to resume...";
+    }
 
-	private bool canChangeFase() {
+    private bool canChangeFase() {
 		return (score >= maxScore);
 	}
 
@@ -92,6 +102,12 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+    private void tryResumeGame() {
+        if (Input.GetKey(KeyCode.Space)) {
+            SceneManager.LoadScene("Menu");
+        }
+    }
+
 
 	public void AddScore(int points) {
 		score += points;
@@ -102,7 +118,6 @@ public class GameController : MonoBehaviour {
 		if (life <= 0) {
 			life = 0;
 			animatorPlane.SetBool ("dead",true);
-			positionGameOver ();
 		}
 			
 	}
